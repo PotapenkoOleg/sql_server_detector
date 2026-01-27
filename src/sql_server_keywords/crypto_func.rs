@@ -1,0 +1,61 @@
+use std::collections::HashSet;
+
+pub fn get_all_crypto_func() -> HashSet<String> {
+    HashSet::from([
+        "ASYMKEY_ID".to_string(),
+        "ASYMKEYPROPERTY".to_string(),
+        "CERTPROPERTY".to_string(),
+        "CERT_ID".to_string(),
+        "CRYPT_GEN_RANDOM".to_string(),
+        "DECRYPTBYASYMKEY".to_string(),
+        "DECRYPTBYCERT".to_string(),
+        "DECRYPTBYKEY".to_string(),
+        "DECRYPTBYKEYAUTOASYMKEY".to_string(),
+        "DECRYPTBYKEYAUTOCERT".to_string(),
+        "DECRYPTBYPASSPHRASE".to_string(),
+        "ENCRYPTBYASYMKEY".to_string(),
+        "ENCRYPTBYCERT".to_string(),
+        "ENCRYPTBYKEY".to_string(),
+        "ENCRYPTBYPASSPHRASE".to_string(),
+        "HASHBYTES".to_string(),
+        "IS_OBJECTSIGNED".to_string(),
+        "KEY_GUID".to_string(),
+        "KEY_ID".to_string(),
+        "KEY_NAME".to_string(),
+        "SIGNBYASYMKEY".to_string(),
+        "SIGNBYCERT".to_string(),
+        "SYMKEYPROPERTY".to_string(),
+        "VERIFYSIGNEDBYCERT".to_string(),
+        "VERIFYSIGNEDBYASYMKEY".to_string(),
+    ])
+}
+
+pub fn get_sql_server_crypto_func() -> HashSet<String> {
+    HashSet::from([
+        "ASYMKEY_ID".to_string(),
+        "ASYMKEYPROPERTY".to_string(),
+        "CERTPROPERTY".to_string(),
+        "CERT_ID".to_string(),
+        "CRYPT_GEN_RANDOM".to_string(),
+        "DECRYPTBYASYMKEY".to_string(),
+        "DECRYPTBYCERT".to_string(),
+        "DECRYPTBYKEY".to_string(),
+        "DECRYPTBYKEYAUTOASYMKEY".to_string(),
+        "DECRYPTBYKEYAUTOCERT".to_string(),
+        "DECRYPTBYPASSPHRASE".to_string(),
+        "ENCRYPTBYASYMKEY".to_string(),
+        "ENCRYPTBYCERT".to_string(),
+        "ENCRYPTBYKEY".to_string(),
+        "ENCRYPTBYPASSPHRASE".to_string(),
+        "HASHBYTES".to_string(),
+        "IS_OBJECTSIGNED".to_string(),
+        "KEY_GUID".to_string(),
+        "KEY_ID".to_string(),
+        "KEY_NAME".to_string(),
+        "SIGNBYASYMKEY".to_string(),
+        "SIGNBYCERT".to_string(),
+        "SYMKEYPROPERTY".to_string(),
+        "VERIFYSIGNEDBYCERT".to_string(),
+        "VERIFYSIGNEDBYASYMKEY".to_string(),
+    ])
+}

@@ -1,0 +1,1 @@
+which of following functions are sql server specific? give me a list
