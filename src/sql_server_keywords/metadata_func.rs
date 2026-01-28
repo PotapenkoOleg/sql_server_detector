@@ -1,58 +1,93 @@
-// Metadata
-// @@PROCID
-// APP_NAME
-// APPLOCK_MODE
-// APPLOCK_TEST
-// ASSEMBLYPROPERTY
-// COL_LENGTH
-// COL_NAME
-// COLUMNPROPERTY
-// DATABASEPROPERTYEX
-// DB_ID
-// DB_NAME
-// FILE_ID
-// FILE_IDEX
-// FILE_NAME
-// FILEGROUP_ID
-// FILEGROUP_NAME
-// FILEGROUPPROPERTY
-// FILEPROPERTY
-// FILEPROPERTYEX
-// FULLTEXTCATALOGPROPERTY
-// FULLTEXTSERVICEPROPERTY
-// INDEX_COL
-// INDEXKEY_PROPERTY
-// INDEXPROPERTY
-// NEXT VALUE FOR
-// OBJECT_DEFINITION
-// OBJECT_ID
-// OBJECT_NAME
-// OBJECT_SCHEMA_NAME
-// OBJECTPROPERTY
-// OBJECTPROPERTYEX
-// ORIGINAL_DB_NAME
-// PARSENAME
-// SCHEMA_ID
-// SCHEMA_NAME
-// SCOPE_IDENTITY
-// SERVERPROPERTY
-// STATS_DATE
-// TYPE_ID
-// TYPE_NAME
-// TYPEPROPERTY
-
 use std::collections::HashSet;
 
-pub fn get_all_metadata_func() -> HashSet<String> {
-    HashSet::from([
-        //"COLLATIONPROPERTY".to_string(),
-
-    ])
-}
+// pub fn get_all_metadata_func() -> HashSet<String> {
+//     HashSet::from([
+//         "@@PROCID".to_string(),
+//         "APP_NAME".to_string(),
+//         "APPLOCK_MODE".to_string(),
+//         "APPLOCK_TEST".to_string(),
+//         "ASSEMBLYPROPERTY".to_string(),
+//         "COL_LENGTH".to_string(),
+//         "COL_NAME".to_string(),
+//         "COLUMNPROPERTY".to_string(),
+//         "DATABASEPROPERTYEX".to_string(),
+//         "DB_ID".to_string(),
+//         "DB_NAME".to_string(),
+//         "FILE_ID".to_string(),
+//         "FILE_IDEX".to_string(),
+//         "FILE_NAME".to_string(),
+//         "FILEGROUP_ID".to_string(),
+//         "FILEGROUP_NAME".to_string(),
+//         "FILEGROUPPROPERTY".to_string(),
+//         "FILEPROPERTY".to_string(),
+//         "FILEPROPERTYEX".to_string(),
+//         "FULLTEXTCATALOGPROPERTY".to_string(),
+//         "FULLTEXTSERVICEPROPERTY".to_string(),
+//         "INDEX_COL".to_string(),
+//         "INDEXKEY_PROPERTY".to_string(),
+//         "INDEXPROPERTY".to_string(),
+//         "NEXT VALUE FOR".to_string(),
+//         "OBJECT_DEFINITION".to_string(),
+//         "OBJECT_ID".to_string(),
+//         "OBJECT_NAME".to_string(),
+//         "OBJECT_SCHEMA_NAME".to_string(),
+//         "OBJECTPROPERTY".to_string(),
+//         "OBJECTPROPERTYEX".to_string(),
+//         "ORIGINAL_DB_NAME".to_string(),
+//         "PARSENAME".to_string(),
+//         "SCHEMA_ID".to_string(),
+//         "SCHEMA_NAME".to_string(),
+//         "SCOPE_IDENTITY".to_string(),
+//         "SERVERPROPERTY".to_string(),
+//         "STATS_DATE".to_string(),
+//         "TYPE_ID".to_string(),
+//         "TYPE_NAME".to_string(),
+//         "TYPEPROPERTY".to_string(),
+//     ])
+// }
 
 pub fn get_sql_server_metadata_func() -> HashSet<String> {
     HashSet::from([
-        //"COLLATIONPROPERTY".to_string(),
-
+        "@@PROCID".to_string(),
+        "APP_NAME".to_string(),
+        "APPLOCK_MODE".to_string(),
+        "APPLOCK_TEST".to_string(),
+        "ASSEMBLYPROPERTY".to_string(),
+        "COL_LENGTH".to_string(),
+        "COL_NAME".to_string(),
+        "COLUMNPROPERTY".to_string(),
+        "DATABASEPROPERTYEX".to_string(),
+        "DB_ID".to_string(),
+        "DB_NAME".to_string(),
+        "FILE_ID".to_string(),
+        "FILE_IDEX".to_string(),
+        "FILE_NAME".to_string(),
+        "FILEGROUP_ID".to_string(),
+        "FILEGROUP_NAME".to_string(),
+        "FILEGROUPPROPERTY".to_string(),
+        "FILEPROPERTY".to_string(),
+        "FILEPROPERTYEX".to_string(),
+        "FULLTEXTCATALOGPROPERTY".to_string(),
+        "FULLTEXTSERVICEPROPERTY".to_string(),
+        "INDEX_COL".to_string(),
+        "INDEXKEY_PROPERTY".to_string(),
+        "INDEXPROPERTY".to_string(),
+        "NEXT VALUE FOR".to_string(),
+        "OBJECT_DEFINITION".to_string(),
+        "OBJECT_ID".to_string(),
+        "OBJECT_NAME".to_string(),
+        "OBJECT_SCHEMA_NAME".to_string(),
+        "OBJECTPROPERTY".to_string(),
+        "OBJECTPROPERTYEX".to_string(),
+        "ORIGINAL_DB_NAME".to_string(),
+        "PARSENAME".to_string(),
+        "SCHEMA_ID".to_string(),
+        "SCHEMA_NAME".to_string(),
+        "SCOPE_IDENTITY".to_string(),
+        "SERVERPROPERTY".to_string(),
+        "STATS_DATE".to_string(),
+        "TYPE_ID".to_string(),
+        "TYPE_NAME".to_string(),
+        "TYPEPROPERTY".to_string(),
     ])
 }
