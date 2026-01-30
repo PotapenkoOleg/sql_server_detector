@@ -29,3 +29,5 @@ target
 /.idea/.gitignore
 /.idea/sql_server_detector.iml
 /FINAL/
+/.idea/dataSources.xml
+/.idea/sqldialects.xml

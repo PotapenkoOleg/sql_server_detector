@@ -84,7 +84,9 @@ async fn process_file_content(
         .lines()
         .map(|line| line.to_uppercase())
         .enumerate()
-        .filter(|(_, line)| check_line_for_sql_server_keywords(file_name, line, all_keywords))
+        .filter(|(line_number, line)| {
+            check_line_for_sql_server_keywords(file_name, line_number, line, all_keywords)
+        })
         .collect();
 
     if !invalid_lines.is_empty() {
@@ -95,13 +97,19 @@ async fn process_file_content(
 
 fn check_line_for_sql_server_keywords(
     file_name: &str,
+    line_number: &usize,
     line: &str,
     all_keywords: &HashSet<String>,
 ) -> bool {
     for keyword in all_keywords {
         if line.contains(keyword) {
-            println!("{} | {} | {}", file_name, keyword, line);
-            //println!("{} | {}", keyword, line);
+            println!(
+                "{} | {} | {} | {}",
+                file_name,
+                line_number,
+                keyword,
+                line.replace("|", "!").trim()
+            );
             return true;
         }
     }
@@ -136,6 +144,7 @@ async fn main() {
     // region Keywords
     let mut all_keywords = HashSet::<String>::new();
     all_keywords.insert("SQLINES".to_string());
+    all_keywords.insert("NOLOCK".to_string());
     all_keywords.extend(get_sql_server_keywords());
     all_keywords.extend(get_sql_server_agg_func());
     all_keywords.extend(get_sql_server_analytic_func());
