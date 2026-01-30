@@ -119,7 +119,7 @@ fn check_line_for_sql_server_keywords(
 async fn write_lines_to_file(file: &PathBuf, lines: &Vec<(usize, String)>) -> anyhow::Result<()> {
     let content = lines
         .iter()
-        .map(|(line_num, line)| format!("{}: {}", line_num, line))
+        .map(|(line_num, line)| format!("{}: {}", line_num, line.trim()))
         .collect::<Vec<String>>()
         .join("\n");
 
@@ -143,35 +143,46 @@ async fn main() {
     let files = list_files(&input_dir).await;
     // region Keywords
     let mut all_keywords = HashSet::<String>::new();
-    all_keywords.insert("SQLINES".to_string());
-    all_keywords.insert("NOLOCK".to_string());
-    all_keywords.extend(get_sql_server_keywords());
-    all_keywords.extend(get_sql_server_agg_func());
-    all_keywords.extend(get_sql_server_analytic_func());
-    all_keywords.extend(get_sql_server_bit_manipulation_func());
-    all_keywords.extend(get_sql_collation_func());
-    all_keywords.extend(get_sql_configuration_func());
-    all_keywords.extend(get_sql_server_conversion_func());
-    all_keywords.extend(get_sql_server_crypto_func());
-    all_keywords.extend(get_sql_server_cursor_func());
-    all_keywords.extend(get_sql_server_data_type_func());
-    all_keywords.extend(get_sql_server_date_time_func());
-    all_keywords.extend(get_sql_server_fuzzy_string_match_func());
-    all_keywords.extend(get_sql_server_graph_func());
-    all_keywords.extend(get_sql_server_json_func());
-    all_keywords.extend(get_sql_server_logical_func());
-    all_keywords.extend(get_sql_server_math_func());
-    all_keywords.extend(get_sql_server_metadata_func());
-    all_keywords.extend(get_sql_server_ranking_func());
-    all_keywords.extend(get_sql_server_regex_func());
-    all_keywords.extend(get_sql_server_replication_func());
-    all_keywords.extend(get_sql_server_security_func());
-    all_keywords.extend(get_sql_server_string_func());
-    all_keywords.extend(get_sql_server_system_func());
-    all_keywords.extend(get_sql_server_system_statistical_func());
-    all_keywords.extend(get_sql_server_text_image_func());
-    all_keywords.extend(get_sql_server_trigger_func());
-    all_keywords.extend(get_sql_server_vector_func());
+    if let Some(keywords_file_name) = &args.keywords_file_name {
+        all_keywords = fs::read_to_string(keywords_file_name)
+            .await
+            .unwrap()
+            .lines()
+            .filter(|line| !line.is_empty())
+            .map(|line| line.to_uppercase())
+            .collect();
+    }
+    if args.load_sql_server_keywords {
+        all_keywords.insert("SQLINES".to_string());
+        all_keywords.insert("NOLOCK".to_string());
+        all_keywords.extend(get_sql_server_keywords());
+        all_keywords.extend(get_sql_server_agg_func());
+        all_keywords.extend(get_sql_server_analytic_func());
+        all_keywords.extend(get_sql_server_bit_manipulation_func());
+        all_keywords.extend(get_sql_collation_func());
+        all_keywords.extend(get_sql_configuration_func());
+        all_keywords.extend(get_sql_server_conversion_func());
+        all_keywords.extend(get_sql_server_crypto_func());
+        all_keywords.extend(get_sql_server_cursor_func());
+        all_keywords.extend(get_sql_server_data_type_func());
+        all_keywords.extend(get_sql_server_date_time_func());
+        all_keywords.extend(get_sql_server_fuzzy_string_match_func());
+        all_keywords.extend(get_sql_server_graph_func());
+        all_keywords.extend(get_sql_server_json_func());
+        all_keywords.extend(get_sql_server_logical_func());
+        all_keywords.extend(get_sql_server_math_func());
+        all_keywords.extend(get_sql_server_metadata_func());
+        all_keywords.extend(get_sql_server_ranking_func());
+        all_keywords.extend(get_sql_server_regex_func());
+        all_keywords.extend(get_sql_server_replication_func());
+        all_keywords.extend(get_sql_server_security_func());
+        all_keywords.extend(get_sql_server_string_func());
+        all_keywords.extend(get_sql_server_system_func());
+        all_keywords.extend(get_sql_server_system_statistical_func());
+        all_keywords.extend(get_sql_server_text_image_func());
+        all_keywords.extend(get_sql_server_trigger_func());
+        all_keywords.extend(get_sql_server_vector_func());
+    }
     // endregion
     for file in files.unwrap() {
         let file_content = read_file(&file).await;
