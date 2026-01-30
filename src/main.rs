@@ -33,8 +33,11 @@ use anyhow::Context;
 use clap::Parser;
 use std::collections::HashSet;
 use std::path::PathBuf;
+use std::sync::{Arc, Mutex};
 use tokio::fs;
 use tokio::io;
+
+use tokio::task::JoinSet;
 use tokio::time::Instant;
 
 async fn ensure_directory_exists_and_empty(dir: &PathBuf) -> anyhow::Result<()> {
@@ -77,7 +80,7 @@ async fn read_file(file: &PathBuf) -> anyhow::Result<String> {
 async fn process_file_content(
     file: &PathBuf,
     content: &str,
-    all_keywords: &HashSet<String>,
+    all_keywords: Arc<Mutex<HashSet<String>>>,
 ) -> anyhow::Result<()> {
     let file_name = file.file_name().unwrap().to_str().unwrap();
     let invalid_lines: Vec<(usize, String)> = content
@@ -85,7 +88,7 @@ async fn process_file_content(
         .map(|line| line.to_uppercase())
         .enumerate()
         .filter(|(line_number, line)| {
-            check_line_for_sql_server_keywords(file_name, line_number, line, all_keywords)
+            check_line_for_sql_server_keywords(file_name, line_number, line, all_keywords.clone())
         })
         .collect();
 
@@ -99,18 +102,21 @@ fn check_line_for_sql_server_keywords(
     file_name: &str,
     line_number: &usize,
     line: &str,
-    all_keywords: &HashSet<String>,
+    all_keywords: Arc<Mutex<HashSet<String>>>,
 ) -> bool {
-    for keyword in all_keywords {
-        if line.contains(keyword) {
-            println!(
-                "{} | {} | {} | {}",
-                file_name,
-                line_number,
-                keyword,
-                line.replace("|", "!").trim()
-            );
-            return true;
+    {
+        let mut all_keywords = all_keywords.lock().unwrap();
+        for keyword in all_keywords.iter() {
+            if line.contains(keyword) {
+                println!(
+                    "{} | {} | {} | {}",
+                    file_name,
+                    line_number,
+                    keyword,
+                    line.replace("|", "!").trim()
+                );
+                return true;
+            }
         }
     }
     false
@@ -129,7 +135,7 @@ async fn write_lines_to_file(file: &PathBuf, lines: &Vec<(usize, String)>) -> an
     Ok(())
 }
 
-#[tokio::main]
+#[tokio::main(flavor = "multi_thread")]
 async fn main() {
     let now = Instant::now();
     let args = Args::parse();
@@ -142,58 +148,65 @@ async fn main() {
         .unwrap();
     let files = list_files(&input_dir).await;
     // region Keywords
-    let mut all_keywords = HashSet::<String>::new();
+    let all_keywords = Arc::new(Mutex::new(HashSet::<String>::new()));
     if let Some(keywords_file_name) = &args.keywords_file_name {
-        all_keywords = fs::read_to_string(keywords_file_name)
-            .await
-            .unwrap()
-            .lines()
-            .filter(|line| !line.is_empty())
-            .map(|line| line.to_uppercase())
-            .collect();
+        {
+            let mut all_keywords = all_keywords.lock().unwrap();
+            let all_keywords_vec: Vec<String> = fs::read_to_string(keywords_file_name)
+                .await
+                .unwrap()
+                .lines()
+                .filter(|line| !line.is_empty())
+                .map(|line| line.to_uppercase())
+                .collect();
+            all_keywords.extend(all_keywords_vec);
+        }
     }
     if args.load_sql_server_keywords {
-        all_keywords.insert("SQLINES".to_string());
-        all_keywords.insert("NOLOCK".to_string());
-        all_keywords.extend(get_sql_server_keywords());
-        all_keywords.extend(get_sql_server_agg_func());
-        all_keywords.extend(get_sql_server_analytic_func());
-        all_keywords.extend(get_sql_server_bit_manipulation_func());
-        all_keywords.extend(get_sql_collation_func());
-        all_keywords.extend(get_sql_configuration_func());
-        all_keywords.extend(get_sql_server_conversion_func());
-        all_keywords.extend(get_sql_server_crypto_func());
-        all_keywords.extend(get_sql_server_cursor_func());
-        all_keywords.extend(get_sql_server_data_type_func());
-        all_keywords.extend(get_sql_server_date_time_func());
-        all_keywords.extend(get_sql_server_fuzzy_string_match_func());
-        all_keywords.extend(get_sql_server_graph_func());
-        all_keywords.extend(get_sql_server_json_func());
-        all_keywords.extend(get_sql_server_logical_func());
-        all_keywords.extend(get_sql_server_math_func());
-        all_keywords.extend(get_sql_server_metadata_func());
-        all_keywords.extend(get_sql_server_ranking_func());
-        all_keywords.extend(get_sql_server_regex_func());
-        all_keywords.extend(get_sql_server_replication_func());
-        all_keywords.extend(get_sql_server_security_func());
-        all_keywords.extend(get_sql_server_string_func());
-        all_keywords.extend(get_sql_server_system_func());
-        all_keywords.extend(get_sql_server_system_statistical_func());
-        all_keywords.extend(get_sql_server_text_image_func());
-        all_keywords.extend(get_sql_server_trigger_func());
-        all_keywords.extend(get_sql_server_vector_func());
+        {
+            let mut all_keywords = all_keywords.lock().unwrap();
+            all_keywords.insert("SQLINES".to_string());
+            all_keywords.insert("NOLOCK".to_string());
+            all_keywords.extend(get_sql_server_keywords());
+            all_keywords.extend(get_sql_server_agg_func());
+            all_keywords.extend(get_sql_server_analytic_func());
+            all_keywords.extend(get_sql_server_bit_manipulation_func());
+            all_keywords.extend(get_sql_collation_func());
+            all_keywords.extend(get_sql_configuration_func());
+            all_keywords.extend(get_sql_server_conversion_func());
+            all_keywords.extend(get_sql_server_crypto_func());
+            all_keywords.extend(get_sql_server_cursor_func());
+            all_keywords.extend(get_sql_server_data_type_func());
+            all_keywords.extend(get_sql_server_date_time_func());
+            all_keywords.extend(get_sql_server_fuzzy_string_match_func());
+            all_keywords.extend(get_sql_server_graph_func());
+            all_keywords.extend(get_sql_server_json_func());
+            all_keywords.extend(get_sql_server_logical_func());
+            all_keywords.extend(get_sql_server_math_func());
+            all_keywords.extend(get_sql_server_metadata_func());
+            all_keywords.extend(get_sql_server_ranking_func());
+            all_keywords.extend(get_sql_server_regex_func());
+            all_keywords.extend(get_sql_server_replication_func());
+            all_keywords.extend(get_sql_server_security_func());
+            all_keywords.extend(get_sql_server_string_func());
+            all_keywords.extend(get_sql_server_system_func());
+            all_keywords.extend(get_sql_server_system_statistical_func());
+            all_keywords.extend(get_sql_server_text_image_func());
+            all_keywords.extend(get_sql_server_trigger_func());
+            all_keywords.extend(get_sql_server_vector_func());
+        }
     }
     // endregion
+    let mut set = JoinSet::new();
     for file in files.unwrap() {
         let file_content = read_file(&file).await;
-        process_file_content(
-            &output_dir.join(file.file_name().unwrap()),
-            &file_content.unwrap(),
-            &all_keywords,
-        )
-        .await
-        .expect("Can't process file");
+        let output_file = output_dir.join(file.file_name().unwrap());
+        let all_keywords = all_keywords.clone();
+        set.spawn(async move {
+            process_file_content(&output_file, &file_content.unwrap(), all_keywords).await
+        });
     }
+    let _ = set.join_all().await;
     let elapsed = now.elapsed();
     println!("Elapsed: {:.2?}", elapsed);
 }
