@@ -60,7 +60,6 @@ async fn ensure_directory_exists_and_empty(dir: &PathBuf) -> anyhow::Result<()> 
 async fn list_files(dir: &PathBuf) -> io::Result<Vec<PathBuf>> {
     let mut entries = fs::read_dir(dir).await?;
     let mut files = Vec::new();
-
     while let Some(entry) = entries.next_entry().await? {
         let path = entry.path();
         if path.is_file() {
@@ -83,9 +82,8 @@ async fn process_file_content(
     all_keywords: Arc<HashSet<String>>,
 ) -> anyhow::Result<()> {
     let file_name = file.file_name().unwrap().to_str().unwrap();
-    let invalid_lines: Vec<(usize, String)> = content
+    let invalid_lines: Vec<(usize, &str)> = content
         .lines()
-        .map(|line| line.to_uppercase())
         .enumerate()
         .filter(|(line_number, line)| {
             check_line_for_sql_server_keywords(file_name, line_number, line, all_keywords.clone())
@@ -104,8 +102,9 @@ fn check_line_for_sql_server_keywords(
     line: &str,
     all_keywords: Arc<HashSet<String>>,
 ) -> bool {
+    let line_uppercase = line.to_uppercase();
     for keyword in all_keywords.iter() {
-        if line.contains(keyword) {
+        if line_uppercase.contains(keyword) {
             println!(
                 "{} | {} | {} | {}",
                 file_name,
@@ -116,11 +115,10 @@ fn check_line_for_sql_server_keywords(
             return true;
         }
     }
-
     false
 }
 
-async fn write_lines_to_file(file: &PathBuf, lines: &Vec<(usize, String)>) -> anyhow::Result<()> {
+async fn write_lines_to_file(file: &PathBuf, lines: &Vec<(usize, &str)>) -> anyhow::Result<()> {
     let content = lines
         .iter()
         .map(|(line_num, line)| format!("{}: {}", line_num, line.trim()))
