@@ -7,7 +7,7 @@ use clap::Parser;
     about = "Utility for detection Sql Server specific keywords and functions is translated SQL code"
 )]
 pub struct Args {
-    #[arg(long, short, default_value = "./FINAL/")]
+    #[arg(long, short /*, default_value = "./FINAL/"*/)]
     pub input_directory: String,
 
     #[arg(long, short)]
