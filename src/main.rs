@@ -1,5 +1,7 @@
 mod clap_parser;
 mod sql_server_keywords;
+mod helpers;
+mod version;
 
 use crate::clap_parser::Args;
 use crate::sql_server_keywords::agg_func::get_sql_server_agg_func;
@@ -39,6 +41,7 @@ use tokio::io;
 
 use tokio::task::JoinSet;
 use tokio::time::Instant;
+use crate::helpers::{print_banner, print_separator};
 
 async fn ensure_directory_exists_and_empty(dir: &PathBuf) -> anyhow::Result<()> {
     if !dir.exists() {
@@ -135,6 +138,11 @@ async fn write_lines_to_file(file: &PathBuf, lines: &Vec<(usize, &str)>) -> anyh
 async fn main() {
     let now = Instant::now();
     let args = Args::parse();
+    if !args.suppress_banner {
+        print_separator();
+        print_banner();
+        print_separator();
+    }
     let input_dir_name = &args.input_directory;
     let input_dir = PathBuf::from(input_dir_name);
     let mut output_dir = PathBuf::from(input_dir_name);
@@ -198,6 +206,8 @@ async fn main() {
         });
     }
     let _ = set.join_all().await;
-    let elapsed = now.elapsed();
-    println!("Elapsed: {:.2?}", elapsed);
+    if !args.suppress_banner {
+        let elapsed = now.elapsed();
+        println!("Elapsed: {:.2?}", elapsed);
+    }
 }

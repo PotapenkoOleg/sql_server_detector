@@ -1,2 +1,2 @@
 # sql_server_detector
-Tool to detect Sql Server specific keywords and function is translated SQL code
+Utility for detection Sql Server specific keywords and functions is translated SQL code

@@ -1,6 +1,7 @@
 [package]
 name = "sql_server_detector"
 version = "0.1.0"
+authors = ["Oleg Potapenko"]
 edition = "2024"
 
 [dependencies]
