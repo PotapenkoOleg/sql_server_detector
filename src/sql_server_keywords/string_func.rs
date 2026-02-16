@@ -49,5 +49,6 @@ pub fn get_sql_server_string_func() -> HashSet<String> {
         // "STR".to_string(), // *
         "STRING_ESCAPE".to_string(),
         "STUFF".to_string(),
+        "CONCAT_WS".to_string(),
     ])
 }
